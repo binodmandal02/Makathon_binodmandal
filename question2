@@ -1,0 +1,31 @@
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, isqrt(n)+1):
+        if n % i == 0:
+            return False
+    return True
+
+def count_bracelets(N):
+    dp = [[[0, 0] for j in range(N+1)] for i in range(N+1)]
+    dp[1][0][0] = 1
+    dp[1][1][1] = 1
+    for i in range(2, N+1):
+        k = max(j for j in range(2, i+1) if is_prime(j))
+        white_count, black_count = 0, 0
+        for j in range(i-k+1, i):
+            for color in range(2):
+                white_count += dp[j][i-k][color][1]
+                black_count += dp[j][i-k][color][0]
+        for j in range(N+1):
+            if j > 0:
+                dp[i][j][1] += white_count
+            dp[i][j][0] += black_count
+            if j > 0 and white_count >= black_count:
+                dp[i][j][1] += dp[i-1][j-1][0]
+    return sum(dp[N][j][1] for j in range(N+1))
+
+T = int(input())
+for _ in range(T):
+    N = int(input())
+    print(count_bracelets(N))
